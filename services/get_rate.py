@@ -1,7 +1,7 @@
 import requests
 import os
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # Load values from .env
@@ -31,6 +31,11 @@ def convert_to_bst(utc_time_str):
     bst_time = utc_time.astimezone(bst_timezone)
     return bst_time
 
+# New Function: Check if a time period is within the next 12 hours
+def within_next_12_hours(from_time, to_time, current_time):
+    twelve_hrs_later = current_time + timedelta(hours=12)
+    return from_time <= twelve_hrs_later and (to_time is None or to_time > current_time)
+
 def get_rate():
     rates_data = fetch_rates()
 
@@ -54,3 +59,34 @@ def get_rate():
             value_inc_vat = float(rate["value_inc_vat"])  # Ensure value is a float for comparison
             print(f"Current rate: {value_inc_vat}p/kWh")
             return value_inc_vat
+
+def get_avg_rate():
+    rates_data = fetch_rates()
+
+    # Get current time in bst timezone
+    current_time_bst = datetime.now(pytz.timezone("Europe/London"))
+    
+    rates_next_12_hrs = []  # Stores the rates valid within the next 12 hrs
+
+    for rate in rates_data["results"]:
+        valid_from_bst = convert_to_bst(rate["valid_from"])
+        valid_to = rate.get("valid_to", "Ongoing")
+
+        if valid_to != "Ongoing":
+            valid_to_bst = convert_to_bst(valid_to)
+        else:
+            valid_to_bst = None
+
+        # Check if rate is valid in the next 12 hours
+        if within_next_12_hours(valid_from_bst, valid_to_bst, current_time_bst):
+            value_inc_vat = float(rate["value_inc_vat"])  # Ensure value is a float
+            rates_next_12_hrs.append(value_inc_vat)  # Add rate to list
+
+    # Compute average if list is not empty
+    if rates_next_12_hrs:
+        avg_rate_next_12_hrs = sum(rates_next_12_hrs) / len(rates_next_12_hrs)
+        print(f"Average rate for the next 12 hours: {avg_rate_next_12_hrs}p/kWh")
+    else:
+        print("No rates available for the next 12 hours.")
+    return int(avg_rate_next_12_hrs)
+    
