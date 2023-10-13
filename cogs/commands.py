@@ -25,7 +25,7 @@ class Commands(commands.Cog):
         await ctx.send(file=file, embed=embed)
 
     @commands.command()
-    async def avrate(self, ctx, member: discord.Member = None):
+    async def avg(self, ctx, member: discord.Member = None):
         """Get Octopus Agile average rate"""
         file = discord.File("static/octopus.png")
         member = member or ctx.author

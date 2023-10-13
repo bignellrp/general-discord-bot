@@ -36,6 +36,11 @@ def within_next_12_hours(from_time, to_time, current_time):
     twelve_hrs_later = current_time + timedelta(hours=12)
     return from_time <= twelve_hrs_later and (to_time is None or to_time > current_time)
 
+# New Function: Check if a time period is within the next 12 hours
+def within_next_24_hours(from_time, to_time, current_time):
+    twelve_hrs_later = current_time + timedelta(hours=24)
+    return from_time <= twelve_hrs_later and (to_time is None or to_time > current_time)
+
 def get_rate():
     rates_data = fetch_rates()
 
@@ -89,4 +94,37 @@ def get_avg_rate():
     else:
         print("No rates available for the next 12 hours.")
     return int(avg_rate_next_12_hrs)
+
+def check_for_negative_rates():
+    rates_data = fetch_rates()
+
+    # Get current time in bst timezone
+    current_time_bst = datetime.now(pytz.timezone("Europe/London"))
     
+    negative_rates = []  # Stores the negative rates within the next 24 hrs
+
+    for rate in rates_data["results"]:
+        valid_from_bst = convert_to_bst(rate["valid_from"])
+        valid_to = rate.get("valid_to", "Ongoing")
+
+        if valid_to != "Ongoing":
+            valid_to_bst = convert_to_bst(valid_to)
+        else:
+            valid_to_bst = None
+
+        # Check if rate is valid in the next 24 hours
+        if within_next_24_hours(valid_from_bst, valid_to_bst, current_time_bst):
+            value_inc_vat = float(rate["value_inc_vat"])  # Ensure value is a float
+
+            if value_inc_vat < 0:    # Check if the rate is negative
+                negative_rates.append(value_inc_vat)  # Add negative rate to its list
+
+    # Check for negative rates
+    if negative_rates:
+        print("There are some negative rates in the next 24 hours.")
+        result = True
+    else:
+        print("There are no negative rates in the next 24 hours.")
+        result = False
+
+    return result
