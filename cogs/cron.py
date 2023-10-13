@@ -8,7 +8,7 @@ class Cron(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @aiocron.crontab('35 18 * * *')
+    @aiocron.crontab('00 19 * * *')
     @commands.Cog.listener()
     async def cronmsg():
         get_channelid = int(CHANNEL_ID) #The chnnelid must be an int
