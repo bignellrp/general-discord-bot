@@ -1,18 +1,18 @@
 from discord.ext import commands
 import aiocron
-from bot import CHANNEL_ID
 from services.get_rate import check_for_negative_rates
+from bot import bot, CHANNEL_ID
 
 class Cron(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @aiocron.crontab('30 19 * * *')
+    @aiocron.crontab('00 20 * * *')
     @commands.Cog.listener()
-    async def cronmsg(self):
+    async def cronmsg():
         get_channelid = int(CHANNEL_ID)
-        channel = self.bot.get_channel(get_channelid)
+        channel = bot.get_channel(get_channelid)
         if check_for_negative_rates():
             await channel.send('Next 24hrs has negative rates!')
 
