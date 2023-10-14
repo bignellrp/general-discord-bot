@@ -3,7 +3,7 @@ import os
 from PyP100 import PyP100
 from dotenv import load_dotenv
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Load values from .env
 load_dotenv()

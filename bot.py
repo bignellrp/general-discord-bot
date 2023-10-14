@@ -3,6 +3,9 @@ import discord.ext.commands as commands
 from dotenv import load_dotenv
 import os
 import logging
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.executors.pool import ProcessPoolExecutor
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -10,7 +13,10 @@ logging.getLogger('discord').setLevel(logging.ERROR)
 logging.getLogger('discord.http').setLevel(logging.WARNING)
 
 # Load environment variables from .env
-load_dotenv()  
+load_dotenv()
+
+# Load the scheduler
+scheduler = AsyncIOScheduler()
 
 # Set up the bot
 intents = discord.Intents.default()
