@@ -63,20 +63,20 @@ class Commands(commands.Cog):
     async def set(self, ctx, member: discord.Member = None):
         """Manually override the schedule"""
         member = member or ctx.author
+        get_channelid = int(CHANNEL_ID)
+        channel = bot.get_channel(get_channelid)
         optimal_period_end_time = get_optimal_time()
         optimal_period_start_time = optimal_period_end_time - timedelta(hours=5)
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
-        get_channelid = int(CHANNEL_ID)
-        channel = bot.get_channel(get_channelid)
 
         # Here we remove all other jobs first
         scheduler.remove_all_jobs()
 
         if start_time:
-            await channel.send(f'Schedule set to run at {start_time}')
-            scheduler.add_job(control_smart_plug("on"), 'date', run_date=start_time)
-            scheduler.add_job(control_smart_plug("off"), 'date', run_date=end_time)
+            await channel.send(f'Schedule set to start at {start_time}')
+            scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
+            scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
 
 def setup(bot):
