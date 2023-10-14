@@ -155,3 +155,71 @@ def get_optimal_time():
         print("No optimal period found in the future.")
 
     return optimal_period_end_time
+
+def get_optimal_time12():
+    rates_data = fetch_rates()
+
+    # Get current time in bst timezone
+    current_time_bst = datetime.now(pytz.timezone("Europe/London"))
+    
+    results = rates_data["results"]
+    future_results = [
+        rate for rate in results 
+        if within_next_12_hours(
+            convert_to_bst(rate["valid_from"]),
+            convert_to_bst(rate.get("valid_to")) if rate.get("valid_to") != "Ongoing" else None,
+            current_time_bst
+        )
+    ]
+
+    optimal_period_end_time = None
+    lowest_average = float('inf')
+
+    for i in range(len(future_results) - 9):  # loop until the last possible 5hr block ends
+        five_hour_period = future_results[i:i+10]  # get the next 5hr block of rates
+        five_hour_average = sum(float(rate["value_inc_vat"]) for rate in five_hour_period) / 10  # calculate average
+
+        if five_hour_average < lowest_average:  # check if the current block has a lower average than previous
+            lowest_average = five_hour_average
+            optimal_period_end_time = convert_to_bst(five_hour_period[0]["valid_from"])
+
+    if optimal_period_end_time:
+        print(f"Optimal period end time (BST): {optimal_period_end_time}")
+    else:
+        print("No optimal period found in the next 12 hours.")
+
+    return optimal_period_end_time
+
+def get_optimal_time24():
+    rates_data = fetch_rates()
+
+    # Get current time in bst timezone
+    current_time_bst = datetime.now(pytz.timezone("Europe/London"))
+    
+    results = rates_data["results"]
+    future_results = [
+        rate for rate in results 
+        if within_next_24_hours(
+            convert_to_bst(rate["valid_from"]),
+            convert_to_bst(rate.get("valid_to")) if rate.get("valid_to") != "Ongoing" else None,
+            current_time_bst
+        )
+    ]
+
+    optimal_period_end_time = None
+    lowest_average = float('inf')
+
+    for i in range(len(future_results) - 9):  # loop until the last possible 5hr block ends
+        five_hour_period = future_results[i:i+10]  # get the next 5hr block of rates
+        five_hour_average = sum(float(rate["value_inc_vat"]) for rate in five_hour_period) / 10  # calculate average
+
+        if five_hour_average < lowest_average:  # check if the current block has a lower average than previous
+            lowest_average = five_hour_average
+            optimal_period_end_time = convert_to_bst(five_hour_period[0]["valid_from"])
+
+    if optimal_period_end_time:
+        print(f"Optimal period end time (BST): {optimal_period_end_time}")
+    else:
+        print("No optimal period found in the next 24 hours.")
+
+    return optimal_period_end_time
