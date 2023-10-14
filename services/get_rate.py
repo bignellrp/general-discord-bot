@@ -148,7 +148,6 @@ def get_optimal_time():
         if five_hour_average < lowest_average:  # check if the current block has a lower average than previous
             lowest_average = five_hour_average
             optimal_period_end_time = convert_to_bst(five_hour_period[0]["valid_from"])
-            print(f"New lowest average found. End Time: {optimal_period_end_time}, Average Rate: {lowest_average}")
 
     if optimal_period_end_time:
         print(f"Optimal period end time (BST): {optimal_period_end_time}")
