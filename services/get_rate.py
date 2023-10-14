@@ -156,5 +156,3 @@ def get_optimal_time():
         print("No optimal period found in the future.")
 
     return optimal_period_end_time
-
-get_optimal_time()
