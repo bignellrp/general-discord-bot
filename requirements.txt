@@ -1,6 +1,7 @@
 aiocron==1.8
 aiofiles==0.7.0
 aiohttp==3.7.4.post0
+APScheduler==3.10.4
 Async-OAuthlib==0.0.9
 async-timeout==3.0.1
 asyncio==3.4.3

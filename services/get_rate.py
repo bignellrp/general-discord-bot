@@ -128,3 +128,33 @@ def check_for_negative_rates():
         result = False
 
     return result
+
+def get_optimal_time():
+    rates_data = fetch_rates()
+
+    # Get current time in bst timezone
+    current_time_bst = datetime.now(pytz.timezone("Europe/London"))
+    
+    results = rates_data["results"]
+    future_results = [rate for rate in results if convert_to_bst(rate["valid_from"]) > current_time_bst]
+
+    optimal_period_end_time = None
+    lowest_average = float('inf')
+
+    for i in range(len(future_results) - 9):  # loop until the last possible 5hr block ends
+        five_hour_period = future_results[i:i+10]  # get the next 5hr block of rates
+        five_hour_average = sum(float(rate["value_inc_vat"]) for rate in five_hour_period) / 10  # calculate average
+
+        if five_hour_average < lowest_average:  # check if the current block has a lower average than previous
+            lowest_average = five_hour_average
+            optimal_period_end_time = convert_to_bst(five_hour_period[0]["valid_from"])
+            print(f"New lowest average found. End Time: {optimal_period_end_time}, Average Rate: {lowest_average}")
+
+    if optimal_period_end_time:
+        print(f"Optimal period end time (BST): {optimal_period_end_time}")
+    else:
+        print("No optimal period found in the future.")
+
+    return optimal_period_end_time
+
+get_optimal_time()
