@@ -21,11 +21,11 @@ class Cron(commands.Cog):
         if check_for_negative_rates():
             await channel.send('Next 24hrs has negative rates!')
 
-    @aiocron.crontab('50 12 * * *')
+    @aiocron.crontab('20 13 * * *')
     @commands.Cog.listener()
     async def on_ready(self):
         optimal_period_start_time = get_optimal_time()
-        optimal_period_start_time = optimal_period_start_time - timedelta(hours=4)
+        optimal_period_start_time = optimal_period_start_time - timedelta(hours=4.5)
         if optimal_period_start_time:
             # Convert datetime to string format required by apscheduler - "%Y-%m-%d %H:%M:%S"
             str_optimal_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
