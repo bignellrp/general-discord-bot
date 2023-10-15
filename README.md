@@ -9,6 +9,7 @@ A handy discord bot for running random commands.
 !off - Turns off the smart plug
 !set - Overrides the smart plug schedule, setting the cheapest average rate
 !can - Cancel the schedule
+!show - Show current schedule
 
 # Note:
 The schedule is set to run at 8pm every day by default.

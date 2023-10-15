@@ -135,5 +135,16 @@ class Commands(commands.Cog):
         scheduler.remove_all_jobs()
         await ctx.send(f'Schedule cancelled!')
 
+    @commands.command()
+    async def show(self, ctx):
+        """Show current schedule"""
+        if not scheduler.get_jobs():
+            await ctx.send("No scheduled jobs.")
+        else:
+            response = "Current Jobs:\n"
+            for job in scheduler.get_jobs():
+                response += f"Job ID: {job.id}, next run at: {job.next_run_time}\n"
+            await ctx.send(response)
+
 def setup(bot):
     bot.add_cog(Commands(bot))
