@@ -46,20 +46,23 @@ class Commands(commands.Cog):
         await ctx.send(file=file, embed=embed)
 
     @commands.command()
-    async def on(self):
+    async def on(self, ctx, member: discord.Member = None):
         """Turn plug on manually"""
+        member = member or ctx.author
         control_smart_plug("on")
         print("Manually turned plug on!")
 
     @commands.command()
-    async def off(self):
+    async def off(self, ctx, member: discord.Member = None):
         """Turn plug off manually"""
+        member = member or ctx.author
         control_smart_plug("off")
         print("Manually turned plug off!")
 
     @commands.command()
-    async def set(self):
+    async def set(self, ctx, member: discord.Member = None):
         """Manually override schedule"""
+        member = member or ctx.author
         get_channelid = int(CHANNEL_ID)
         channel = bot.get_channel(get_channelid)
         optimal_period_end_time, average = get_optimal_time()
@@ -77,8 +80,9 @@ class Commands(commands.Cog):
             scheduler.start()
 
     @commands.command()
-    async def set12(self):
+    async def set12(self, ctx, member: discord.Member = None):
         """Manually override schedule"""
+        member = member or ctx.author
         get_channelid = int(CHANNEL_ID)
         channel = bot.get_channel(get_channelid)
         optimal_period_end_time, average = get_optimal_time12()
@@ -96,8 +100,9 @@ class Commands(commands.Cog):
             scheduler.start()
 
     @commands.command()
-    async def set24(self):
+    async def set24(self, ctx, member: discord.Member = None):
         """Manually override schedule"""
+        member = member or ctx.author
         get_channelid = int(CHANNEL_ID)
         channel = bot.get_channel(get_channelid)
         optimal_period_end_time, average = get_optimal_time24()
@@ -115,8 +120,9 @@ class Commands(commands.Cog):
             scheduler.start()
 
     @commands.command()
-    async def can(self, ctx):
+    async def can(self, ctx, member: discord.Member = None):
         """Cancel schedule"""
+        member = member or ctx.author
         scheduler.remove_all_jobs()
         await ctx.send(f'Schedule cancelled!')
 
