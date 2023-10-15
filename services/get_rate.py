@@ -154,7 +154,7 @@ def get_optimal_time():
     else:
         print("No optimal period found in the future.")
 
-    return optimal_period_end_time
+    return optimal_period_end_time, int(lowest_average)
 
 def get_optimal_time12():
     rates_data = fetch_rates()
@@ -188,7 +188,7 @@ def get_optimal_time12():
     else:
         print("No optimal period found in the next 12 hours.")
 
-    return optimal_period_end_time
+    return optimal_period_end_time, int(lowest_average)
 
 def get_optimal_time24():
     rates_data = fetch_rates()
@@ -222,4 +222,4 @@ def get_optimal_time24():
     else:
         print("No optimal period found in the next 24 hours.")
 
-    return optimal_period_end_time
+    return optimal_period_end_time, int(lowest_average)

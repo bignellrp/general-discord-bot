@@ -15,7 +15,7 @@ class Cron(commands.Cog):
     async def set_schedule():
         get_channelid = int(CHANNEL_ID)
         channel = bot.get_channel(get_channelid)
-        optimal_period_end_time = get_optimal_time24()
+        optimal_period_end_time, average = get_optimal_time24()
         optimal_period_start_time = optimal_period_end_time - timedelta(hours=5)
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -26,7 +26,7 @@ class Cron(commands.Cog):
         scheduler.remove_all_jobs()
 
         if start_time:
-            await channel.send(f'Schedule set to start at {start_time}')
+            await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
