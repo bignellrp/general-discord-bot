@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta,datetime
 from discord.ext import commands
 import aiocron
 from services.get_rate import *
@@ -22,14 +22,14 @@ class Cron(commands.Cog):
         if check_for_negative_rates():
             await channel.send('Next 24hrs has negative rates!')
         
-        # Here we remove all other jobs first
-        scheduler.remove_all_jobs()
-
-        if start_time:
+        if start_time > datetime.now():
+            scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
+        else:
+            await channel.send('Error setting schedule!')
 
 def setup(bot):
     bot.add_cog(Cron(bot))

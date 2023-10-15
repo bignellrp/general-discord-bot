@@ -4,7 +4,7 @@ from services.get_rate import get_rate, get_avg_rate
 from services.smart_plug import control_smart_plug
 from services.get_rate import *
 from bot import bot, CHANNEL_ID, scheduler
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 class Commands(commands.Cog):
 
@@ -70,14 +70,14 @@ class Commands(commands.Cog):
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Here we remove all other jobs first
-        scheduler.remove_all_jobs()
-
-        if start_time:
+        if start_time > datetime.now():
+            scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
+        else:
+            await channel.send('Error setting schedule!')
 
     @commands.command()
     async def set12(self, ctx, member: discord.Member = None):
@@ -90,14 +90,14 @@ class Commands(commands.Cog):
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Here we remove all other jobs first
-        scheduler.remove_all_jobs()
-
-        if start_time:
+        if start_time > datetime.now():
+            scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
+        else:
+            await channel.send('Error setting schedule!')
 
     @commands.command()
     async def set24(self, ctx, member: discord.Member = None):
@@ -110,14 +110,14 @@ class Commands(commands.Cog):
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Here we remove all other jobs first
-        scheduler.remove_all_jobs()
-
-        if start_time:
+        if start_time > datetime.now():
+            scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
+        else:
+            await channel.send('Error setting schedule!')
 
     @commands.command()
     async def can(self, ctx, member: discord.Member = None):
