@@ -22,7 +22,10 @@ class Cron(commands.Cog):
         if check_for_negative_rates():
             await channel.send('Next 24hrs has negative rates!')
         
-        if start_time > datetime.now():
+        # Code assumes start_time is a string in this format: '%Y-%m-%d %H:%M:%S'
+        parsed_start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+
+        if start_time and parsed_start_time > datetime.now():
             scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])

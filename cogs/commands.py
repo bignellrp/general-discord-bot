@@ -69,8 +69,11 @@ class Commands(commands.Cog):
         optimal_period_start_time = optimal_period_end_time - timedelta(hours=5)
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Code assumes start_time is a string in this format: '%Y-%m-%d %H:%M:%S'
+        parsed_start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
 
-        if start_time > datetime.now():
+        if start_time and parsed_start_time > datetime.now():
             scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
@@ -89,8 +92,11 @@ class Commands(commands.Cog):
         optimal_period_start_time = optimal_period_end_time - timedelta(hours=5)
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Code assumes start_time is a string in this format: '%Y-%m-%d %H:%M:%S'
+        parsed_start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
 
-        if start_time > datetime.now():
+        if start_time and parsed_start_time > datetime.now():
             scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
@@ -110,7 +116,10 @@ class Commands(commands.Cog):
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        if start_time > datetime.now():
+        # Code assumes start_time is a string in this format: '%Y-%m-%d %H:%M:%S'
+        parsed_start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+
+        if start_time and parsed_start_time > datetime.now():
             scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
