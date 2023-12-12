@@ -7,9 +7,10 @@ load_dotenv()
 
 # Access the API key
 access_token = os.environ["HOME_API"]
+homeassistant = os.environ["HOMEASSISTANT_IP"]
 
 # Home Assistant API endpoint
-api_endpoint = f"http://homeassistant.local:8123/api/services/switch/turn_off"
+api_endpoint = f"http://{homeassistant}:8123/api/services/switch/turn_off"
 
 # Entity ID of your plug switch
 entity_id = "switch.kuga"

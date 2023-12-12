@@ -21,6 +21,7 @@ load_dotenv()
 WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 # LOG_FILE = "/var/log/cron.log"
 # MAXIMUM_RATE = 16 # Set your desired maximum rate here.
+homeassistant = os.environ["HOMEASSISTANT_IP"]
 
 def post_to_discord(message):
     data = {
@@ -51,7 +52,7 @@ def control_smart_plug(action):
         access_token = os.environ["HOME_API"]
 
         # Home Assistant API endpoint
-        api_endpoint = f"http://homeassistant.local:8123/api/services/switch/turn_{action}"
+        api_endpoint = f"http://{homeassistant}:8123/api/services/switch/turn_{action}"
 
         # Entity ID of your plug switch
         entity_id = "switch.kuga"
