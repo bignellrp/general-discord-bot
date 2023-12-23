@@ -1,7 +1,7 @@
 from datetime import datetime
 from discord.ext import commands
 import aiocron
-from services.get_newrate import *
+from services.get_newrate import get_min_avg_rate, check_for_negative_rates
 from services.smart_plug import control_smart_plug
 from bot import bot, CHANNEL_ID, scheduler
 
