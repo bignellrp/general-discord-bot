@@ -6,9 +6,11 @@ from selenium.webdriver.support.ui import Select
 import time
 from datetime import datetime, timedelta
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 import os
 from selenium_stealth import stealth
+import base64
+import discord
 
 from dotenv import load_dotenv
 
@@ -23,6 +25,22 @@ fromemail = os.getenv("FROMEMAIL")
 toemail = os.getenv("TOEMAIL")
 key = os.getenv("APIKEY")
 
+def discordmessage(status, spaces, booking):
+    try:
+        entry_date = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
+        ##Send Rerun message to discord
+        url = os.getenv("DISCORD_WEBHOOK")
+        webhook = discord.Webhook.from_url(url, 
+                                        adapter=discord.RequestsWebhookAdapter())
+        ##Embed Message
+        embed=discord.Embed(title="Unity place car park for {} - {}".format(entry_date, status),
+                            color=discord.Color.dark_green())
+        embed.set_author(name="general-bot")
+        embed.set_footer(text="{} \n {} \n Car: {}".format(booking, spaces, car))
+        webhook.send(embed = embed)
+    except Exception as e:
+        print(e.message)
+
 def sendmail(status, spaces, booking):
     entry_date = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
     sendgrid_api_key = key
@@ -30,14 +48,38 @@ def sendmail(status, spaces, booking):
     receiver_email = toemail
     subject = "Unity place car park for {} - {}".format(entry_date, status)
     content = "{} \n {} \n Car: {}".format(booking, spaces, car)
+
+    # Create the email message
     message = Mail(
         from_email=sender_email,
         to_emails=receiver_email,
         subject=subject,
         plain_text_content=content)
+
     try:
+        # Check and attach any of the PNG files that exist
+        for png_file in ['ok.png', 'error.png', 'remaining.png']:
+            if os.path.exists(png_file) and os.path.getsize(png_file) > 0:
+                with open(png_file, 'rb') as f:
+                    file_data = f.read()
+                    file_base64 = base64.b64encode(file_data).decode()
+                
+                attachment = Attachment(
+                    FileContent(file_base64),
+                    FileName(png_file),
+                    FileType('image/png'),
+                    Disposition('attachment')
+                )
+                message.attachment = attachment
+
+        # Send the email whether or not there were attachments
         sg = SendGridAPIClient(sendgrid_api_key)
         sg.send(message)
+
+        # After successful send, delete any of the PNG files that exist
+        for png_file in ['ok.png', 'error.png', 'remaining.png']:
+            if os.path.exists(png_file):
+                os.remove(png_file)
     except Exception as e:
         print(e.message)
 
@@ -100,8 +142,8 @@ def bookcarpark():
         button.click()
 
         #### SELECT PARKING
-        #browser.execute_script("document.body.style.zoom='50%'")
-        #browser.save_screenshot('remaining.png')
+        browser.execute_script("document.body.style.zoom='50%'")
+        browser.save_screenshot('remaining.png')
         browser.execute_script("document.body.style.zoom='100%'")
         partial_href_value = "pid=413"
         link = browser.find_element(By.XPATH, f"//a[contains(@href, '{partial_href_value}')]")
@@ -130,18 +172,21 @@ def bookcarpark():
         button = browser.find_element(By.ID, "PaymentFormSubmit")
         button.click()
         button.click()
-        #browser.save_screenshot('ok.png')
+        browser.save_screenshot('ok.png')
         booking_element = browser.find_element(By.CLASS_NAME, 'confirmation__title')
         booking_text = booking_element.text
+        discordmessage('Success', spaces_text, booking_text)
         sendmail('Success', spaces_text, booking_text)
     except:
         try:
             browser.find_element(By.CLASS_NAME, 'confirmation__title')
             booking_element = browser.find_element(By.CLASS_NAME, 'confirmation__title')
             booking_text = booking_element.text
+            discordmessage('Success', spaces_text, booking_text)
             sendmail('Success', spaces_text, booking_text)
         except:
-            #browser.execute_script("document.body.style.zoom='50%'")
-            #browser.save_screenshot('error.png')
+            browser.execute_script("document.body.style.zoom='50%'")
+            browser.save_screenshot('error.png')
+            discordmessage('Error', '', '')
             sendmail('Error', '', '')
     browser.close()

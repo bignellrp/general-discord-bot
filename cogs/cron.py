@@ -35,10 +35,10 @@ class Cron(commands.Cog):
 
         if start_time and parsed_start_time > datetime.now():
             scheduler.remove_all_jobs()
-            await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
+            await channel.send(f'Smartplug: Starts {start_time} at {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
             if day_of_week in [6, 1, 2]:
-                await channel.send(f'Schedule set to book carpark tomorrow')
+                await channel.send(f'Carpark: Starts at 6:05am tomorrow')
                 scheduler.add_job(bookcarpark, 'date', run_date=car_time)
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
