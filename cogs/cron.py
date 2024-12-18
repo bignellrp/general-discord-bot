@@ -3,7 +3,7 @@ from discord.ext import commands
 import aiocron
 from services.get_newrate import get_min_avg_rate, check_for_negative_rates
 from services.smart_plug import control_smart_plug
-from services.book_carpark import bookcarpark
+#from services.book_carpark import bookcarpark
 from bot import bot, CHANNEL_ID, scheduler
 
 class Cron(commands.Cog):
@@ -37,9 +37,9 @@ class Cron(commands.Cog):
             scheduler.remove_all_jobs()
             await channel.send(f'Smartplug: Starts {start_time} at {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
-            if day_of_week in [6, 1, 2]:
-                await channel.send(f'Carpark: Starts at 6:05am tomorrow')
-                scheduler.add_job(bookcarpark, 'date', run_date=car_time)
+            #if day_of_week in [6, 1, 2]:
+            #    await channel.send(f'Carpark: Starts at 6:05am tomorrow')
+            #    scheduler.add_job(bookcarpark, 'date', run_date=car_time)
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
         else:
