@@ -10,6 +10,7 @@ A handy discord bot for running random commands.
 !set - Overrides the smart plug schedule, setting the cheapest average rate
 !can - Cancel the schedule
 !show - Show current schedule
+!book - Book Unity Place Carpark (01234) for days of the week
 
 # Note:
 The schedule is set to run at 8pm every day by default.
@@ -34,3 +35,8 @@ SMART_PLUG_IP=
 PASSWORD=
 EMAIL=
 ```
+
+# Build a stack in Portainer
+Once stack build in portainer, save the webhook and token to github secrets
+
+e.g. https://portainer.richardbignell.co.uk/api/stacks/webhooks/12dg4ssd5dgdfgdf

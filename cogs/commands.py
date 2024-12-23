@@ -59,7 +59,7 @@ class Commands(commands.Cog):
             sftp.close()
             ssh.close()
 
-            await ctx.send(f"{numbers} days file successfully sent to {remote_user}@{remote_host}:{remote_path}")
+            await ctx.send(f"{numbers} days file successfully!")
         except Exception as e:
             await ctx.send("Failed to transfer the file via SCP. Please check your configuration.")
             print(f"SCP error: {e}")
