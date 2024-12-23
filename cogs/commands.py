@@ -3,9 +3,10 @@ from discord.ext import commands
 from services.get_newrate import get_rate, get_avg_rate, get_min_avg_rate
 from services.smart_plug import control_smart_plug
 from services.get_rate import *
-#from services.book_carpark import bookcarpark
-from bot import bot, CHANNEL_ID, scheduler
-from datetime import datetime, timedelta
+from bot import bot, CHANNEL_ID, scheduler, USER, PASSWORD, HOST
+from datetime import datetime
+import os
+import paramiko
 
 class Commands(commands.Cog):
 
@@ -28,6 +29,43 @@ class Commands(commands.Cog):
         embed.set_thumbnail(url="attachment://octopus.png")
         print("Posted Current Rate to Discord!")
         await ctx.send(file=file, embed=embed)
+
+@commands.command()
+async def book(self, ctx, *, numbers: str):
+    """Book days by specifying numbers between 0 and 6"""
+    # Validate the input
+    if not numbers.isdigit() or any(char not in "0123456" for char in numbers):
+        await ctx.send("Invalid input! Please provide a string of numbers between 0 and 6, e.g., 025.")
+        return
+
+    # Create the `days` file with the numbers
+    file_path = "days"
+    with open(file_path, "w") as file:
+        file.write(numbers)
+
+    # SCP the file to the remote location using paramiko
+    remote_user = USER
+    remote_host = HOST
+    remote_path = f"/home/{USER}/unityplace-carpark/days"
+    password = PASSWORD
+
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(remote_host, username=remote_user, password=password)
+
+        sftp = ssh.open_sftp()
+        sftp.put(file_path, remote_path)
+        sftp.close()
+        ssh.close()
+
+        await ctx.send(f"{numbers} days file successfully sent to {remote_user}@{remote_host}:{remote_path}")
+    except Exception as e:
+        await ctx.send("Failed to transfer the file via SCP. Please check your configuration.")
+        print(f"SCP error: {e}")
+
+    # Clean up the local file
+    os.remove(file_path)
 
     @commands.command()
     async def avg(self, ctx, member: discord.Member = None):
@@ -71,12 +109,6 @@ class Commands(commands.Cog):
         optimal_period_start_time, optimal_period_end_time, average = get_min_avg_rate()
         start_time = optimal_period_start_time.strftime("%Y-%m-%d %H:%M:%S")
         end_time = optimal_period_end_time.strftime("%Y-%m-%d %H:%M:%S")
-
-        # Determine the day of the week for tomorrow
-        tomorrow = datetime.now() + timedelta(days=1)
-        day_of_week = tomorrow.weekday()  # Monday = 0, Tuesday = 1, ..., Sunday = 6
-        # Set the time to 6:05 AM
-        car_time = tomorrow.replace(hour=6, minute=5, second=0, microsecond=0)
         
         # Code assumes start_time is a string in this format: '%Y-%m-%d %H:%M:%S'
         parsed_start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
@@ -85,9 +117,6 @@ class Commands(commands.Cog):
             scheduler.remove_all_jobs()
             await channel.send(f'Schedule set to start at {start_time} with average of {average}p/kwh')
             scheduler.add_job(control_smart_plug, 'date', run_date=start_time, args=["on"])
-            #if day_of_week in [6, 1, 2]:
-            #    await channel.send(f'Schedule set to book carpark tomorrow')
-            #    scheduler.add_job(bookcarpark, 'date', run_date=car_time)
             scheduler.add_job(control_smart_plug, 'date', run_date=end_time, args=["off"])
             scheduler.start()
         else:

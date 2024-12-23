@@ -25,6 +25,9 @@ command_prefix = os.getenv("COMMAND_PREFIX")
 bot = commands.Bot(command_prefix=command_prefix, intents=intents)
 TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
+USER = os.getenv("USER")
+PASSWORD = os.getenv("PASSWORD")
+HOST = os.getenv("HOST")
 
 # Load extensions
 bot.load_extension("cogs.login")
