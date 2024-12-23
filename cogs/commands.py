@@ -30,42 +30,42 @@ class Commands(commands.Cog):
         print("Posted Current Rate to Discord!")
         await ctx.send(file=file, embed=embed)
 
-@commands.command()
-async def book(self, ctx, *, numbers: str):
-    """Book days by specifying numbers between 0 and 6"""
-    # Validate the input
-    if not numbers.isdigit() or any(char not in "0123456" for char in numbers):
-        await ctx.send("Invalid input! Please provide a string of numbers between 0 and 6, e.g., 025.")
-        return
+    @commands.command()
+    async def book(self, ctx, *, numbers: str):
+        """Book days by specifying numbers between 0 and 6"""
+        # Validate the input
+        if not numbers.isdigit() or any(char not in "0123456" for char in numbers):
+            await ctx.send("Invalid input! Please provide a string of numbers between 0 and 6, e.g., 025.")
+            return
 
-    # Create the `days` file with the numbers
-    file_path = "days"
-    with open(file_path, "w") as file:
-        file.write(numbers)
+        # Create the `days` file with the numbers
+        file_path = "days"
+        with open(file_path, "w") as file:
+            file.write(numbers)
 
-    # SCP the file to the remote location using paramiko
-    remote_user = USER
-    remote_host = HOST
-    remote_path = f"/home/{USER}/unityplace-carpark/days"
-    password = PASSWORD
+        # SCP the file to the remote location using paramiko
+        remote_user = USER
+        remote_host = HOST
+        remote_path = f"/home/{USER}/unityplace-carpark/days"
+        password = PASSWORD
 
-    try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(remote_host, username=remote_user, password=password)
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(remote_host, username=remote_user, password=password)
 
-        sftp = ssh.open_sftp()
-        sftp.put(file_path, remote_path)
-        sftp.close()
-        ssh.close()
+            sftp = ssh.open_sftp()
+            sftp.put(file_path, remote_path)
+            sftp.close()
+            ssh.close()
 
-        await ctx.send(f"{numbers} days file successfully sent to {remote_user}@{remote_host}:{remote_path}")
-    except Exception as e:
-        await ctx.send("Failed to transfer the file via SCP. Please check your configuration.")
-        print(f"SCP error: {e}")
+            await ctx.send(f"{numbers} days file successfully sent to {remote_user}@{remote_host}:{remote_path}")
+        except Exception as e:
+            await ctx.send("Failed to transfer the file via SCP. Please check your configuration.")
+            print(f"SCP error: {e}")
 
-    # Clean up the local file
-    os.remove(file_path)
+        # Clean up the local file
+        os.remove(file_path)
 
     @commands.command()
     async def avg(self, ctx, member: discord.Member = None):

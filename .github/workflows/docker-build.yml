@@ -21,6 +21,7 @@ jobs:
           PORTAINER_TOKEN: ${{ secrets.PORTAINER_TOKEN }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_MAIN }}
         run: |
+          echo "Webhook URL:" $WEBHOOK_SECRET
           curl -X POST \
                 -H "Authorization: Bearer $PORTAINER_TOKEN" \
                 -H "Content-Type: application/json" \
