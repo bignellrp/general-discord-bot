@@ -55,7 +55,6 @@ class Commands(commands.Cog):
             ssh.connect(remote_host, username=remote_user, password=password)
 
             sftp = ssh.open_sftp()
-            print(f"Attempting to upload {file_path} to {remote_user}@{remote_host}:{remote_path}")
             sftp.put(file_path, remote_path)
             sftp.close()
             ssh.close()
