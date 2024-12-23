@@ -46,7 +46,7 @@ class Commands(commands.Cog):
         # SCP the file to the remote location using paramiko
         remote_user = USER
         remote_host = HOST
-        remote_path = f"/home/{USER}/unityplace-carpark/days"
+        remote_path = f"/home/{USER}/Documents/unityplace-carpark/days"
         password = PASSWORD
 
         try:
@@ -55,6 +55,7 @@ class Commands(commands.Cog):
             ssh.connect(remote_host, username=remote_user, password=password)
 
             sftp = ssh.open_sftp()
+            print(f"Attempting to upload {file_path} to {remote_user}@{remote_host}:{remote_path}")
             sftp.put(file_path, remote_path)
             sftp.close()
             ssh.close()
