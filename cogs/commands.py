@@ -32,10 +32,10 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def book(self, ctx, *, numbers: str):
-        """Book days by specifying numbers between 0 and 6"""
+        """Book days by specifying numbers between 0 and 4"""
         # Validate the input
-        if not numbers.isdigit() or any(char not in "0123456" for char in numbers):
-            await ctx.send("Invalid input! Please provide a string of numbers between 0 and 6, e.g., 025.")
+        if not numbers.isdigit() or any(char not in "01234" for char in numbers) or not (1 <= len(numbers) <= 5):
+            await ctx.send("Invalid input! Only accepts car park days Mon-Fri, e.g., 01234.")
             return
 
         # Create the `days` file with the numbers
