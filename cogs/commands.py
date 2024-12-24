@@ -43,6 +43,19 @@ class Commands(commands.Cog):
         with open(file_path, "w") as file:
             file.write(numbers)
 
+        # Map numbers to days
+        days_map = {
+            '0': 'Mon',
+            '1': 'Tue',
+            '2': 'Wed',
+            '3': 'Thu',
+            '4': 'Fri',
+        }
+
+        # Build the message
+        booked_days = [days_map[char] for char in numbers]
+        booked_days_message = ", ".join(booked_days)
+
         # SCP the file to the remote location using paramiko
         remote_user = USER
         remote_host = HOST
@@ -59,7 +72,8 @@ class Commands(commands.Cog):
             sftp.close()
             ssh.close()
 
-            await ctx.send(f"{numbers} days file successfully!")
+
+            await ctx.send(f"Booked days: {booked_days_message}")
         except Exception as e:
             await ctx.send("Failed to transfer the file via SCP. Please check your configuration.")
             print(f"SCP error: {e}")
