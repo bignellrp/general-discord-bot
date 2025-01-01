@@ -33,7 +33,7 @@ HOST = os.getenv("HOST")
 bot.load_extension("cogs.login")
 bot.load_extension("cogs.welcome")
 bot.load_extension("cogs.commands")
-bot.load_extension("cogs.cron")
+#bot.load_extension("cogs.cron")
 
 # Run the bot
 bot.run(TOKEN)
