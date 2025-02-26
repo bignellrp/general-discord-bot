@@ -35,7 +35,7 @@ class Commands(commands.Cog):
         """Book days by specifying numbers between 0 and 4"""
         # Validate the input
         if not numbers.isdigit() or any(char not in "01234" for char in numbers) or not (1 <= len(numbers) <= 5):
-            await ctx.send("Invalid input! Only accepts car park days Mon-Fri, e.g., 01234.")
+            await ctx.send("Invalid input! Car park days are Mon-Fri, e.g., 01234.")
             return
 
         # Create the `days` file with the numbers
